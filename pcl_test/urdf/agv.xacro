@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+<robot name="agv" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:property name="M_PI" value="3.141592"/>
+  <!-- root link, on the ground just below the model origin -->
+  <link name="base_footprint">
+   <!-- <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.001 0.001 0.001" />
+      </geometry>
+    </visual> -->
+  </link>
+
+  <joint name="base_link_joint" type="fixed">
+    <origin xyz="0.0 0 0" rpy="0 0 0" />
+    <parent link="base_footprint"/>
+    <child link="agv_base_link" />
+  </joint>
+
+
+  <link name="agv_base_link">
+    <inertial>
+      <mass value="5000" />
+      <origin xyz="0 0 0.1964" />
+      <inertia ixx="500.0" ixy="0.0" ixz="0.0"
+        iyy="500.0" iyz="0.0"
+        izz="500.0" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh
+          filename="package://agv_description/meshes/agv_simple.STL" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://agv_description/meshes/agv_simple.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+   <gazebo reference="agv_base_link">     
+      <mu1>0.0</mu1>
+      <mu2>0.0</mu2>
+      <kp>100000000.0</kp>
+      <kd>10000.0</kd>
+      <material>Gazebo/Red</material>
+    </gazebo>
+
+
+    <gazebo>
+    <plugin name="gazebo_mobility_base_plugin" filename="libagv_gazebo_plugins.so">
+      <fast>true</fast>
+      <parent_frame_id>/map</parent_frame_id>
+      <child_frame_id>base_footprint</child_frame_id>
+    </plugin>
+  </gazebo>
+
+  <!-- <include filename="$(find agv_description)/urdf/sensor.xacro"/>   -->
+
+</robot>

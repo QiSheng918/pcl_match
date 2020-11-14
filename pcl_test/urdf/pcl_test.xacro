@@ -1,0 +1,112 @@
+<?xml version="1.0" ?>
+<robot name="sensor" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:property name="M_PI" value="3.141592"/>
+ <link name="world"/>
+
+   <link name="kinect_link">
+      <visual>
+       <origin xyz="0 0 0" rpy="${-M_PI/2} 0 0"/>
+        <geometry>
+         <mesh filename="package://pcl_test/meshes/sensor/kinect.dae"/>
+        </geometry>
+      </visual>
+  	  <collision>
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+  	    <geometry>
+  	      <box size="0.07271 0.27794 0.073"/>
+  	    </geometry>
+  	  </collision>
+      <inertial>
+        <mass value="1" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="0.003881243" ixy="0.0" ixz="0.0"
+                 iyy="0.000498940" iyz="0.0"
+                 izz="0.003879257" />
+      </inertial>
+    </link>
+    
+    <link name="mesh_temp">
+      <visual>
+       <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+         <mesh filename="package://pcl_test/meshes/mesh_temp.stl" scale="0.001 0.001 0.001" />
+         
+        </geometry>
+        
+      </visual>
+  	  <collision>
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+  	    <geometry>
+  	      <mesh filename="package://pcl_test/meshes/mesh_temp.stl" scale="0.001 0.001 0.001"/>
+  	    </geometry>
+  	  </collision>
+      <inertial>
+        <mass value="1" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="0.003881243" ixy="0.0" ixz="0.0"
+                 iyy="0.000498940" iyz="0.0"
+                 izz="0.003879257" />
+      </inertial>
+    </link>
+
+ <joint name="kinect_joint" type="fixed">
+    <origin xyz="0 0 2" rpy="${M_PI} 0 0" />
+        <!-- <origin xyz="0 0 2" rpy="0 ${M_PI/2} 0" /> -->
+
+    <parent link="world"/>
+    <child link="kinect_link"/>
+  </joint> 
+  
+   <joint name="mesh_temp_joint" type="fixed">
+    <origin xyz="0.1 0.2 1" rpy="0 1 0" />
+    <parent link="kinect_link"/>
+    <child link="mesh_temp"/>
+  </joint> 
+
+
+
+
+
+
+
+
+    <gazebo reference="kinect_link">  
+      <sensor type="depth" name="camera">
+        <pose>0 0 0 0 ${-M_PI/2} ${M_PI/2}</pose>
+        <!-- <visualize>true</visualize> -->
+        <always_on>true</always_on>
+        <update_rate>20.0</update_rate>
+        <camera>
+          <horizontal_fov>${60.0*M_PI/180.0}</horizontal_fov>
+          <image>
+            <format>R8G8B8</format>
+            <width>640</width>
+            <height>480</height>
+          </image>
+          <clip>
+            <near>0.05</near>
+            <far>6.0</far>
+          </clip>
+        </camera>
+        <plugin name="kinect_camera_controller" filename="libgazebo_ros_openni_kinect.so">
+          <cameraName>camera</cameraName>
+          <alwaysOn>true</alwaysOn>
+          <updateRate>10</updateRate>
+          <imageTopicName>rgb/image_raw</imageTopicName>
+          <depthImageTopicName>depth/image_raw</depthImageTopicName>
+          <pointCloudTopicName>depth/points</pointCloudTopicName>
+          <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+          <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
+          <frameName>kinect_link</frameName>
+          <baseline>0.1</baseline>
+          <distortion_k1>0.0</distortion_k1>
+          <distortion_k2>0.0</distortion_k2>
+          <distortion_k3>0.0</distortion_k3>
+          <distortion_t1>0.0</distortion_t1>
+          <distortion_t2>0.0</distortion_t2>
+          <pointCloudCutoff>0.4</pointCloudCutoff>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+</robot>
